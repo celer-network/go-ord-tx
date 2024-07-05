@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/btcsuite/btcd/blockchain"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcec/v2/schnorr"
@@ -18,7 +21,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vincentdebug/go-ord-tx/pkg/btcapi"
 	extRpcClient "github.com/vincentdebug/go-ord-tx/pkg/rpcclient"
-	"log"
 )
 
 type InscriptionData struct {
@@ -527,6 +529,7 @@ func (tool *InscriptionTool) calculateFee() int64 {
 
 func (tool *InscriptionTool) Inscribe() (commitTxHash *chainhash.Hash, revealTxHashList []*chainhash.Hash, inscriptions []string, fees int64, err error) {
 	fees = tool.calculateFee()
+	time.Sleep(60 * time.Second)
 	commitTxHash, err = tool.sendRawTransaction(tool.commitTx)
 	if err != nil {
 		return nil, nil, nil, fees, errors.Wrap(err, "send commit tx error")
@@ -534,6 +537,7 @@ func (tool *InscriptionTool) Inscribe() (commitTxHash *chainhash.Hash, revealTxH
 	revealTxHashList = make([]*chainhash.Hash, len(tool.revealTx))
 	inscriptions = make([]string, len(tool.txCtxDataList))
 	for i := range tool.revealTx {
+		time.Sleep(60 * time.Second)
 		_revealTxHash, err := tool.sendRawTransaction(tool.revealTx[i])
 		if err != nil {
 			return commitTxHash, revealTxHashList, nil, fees, errors.Wrap(err, fmt.Sprintf("send reveal tx error, %d。", i))
